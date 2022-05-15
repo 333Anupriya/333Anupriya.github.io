@@ -1,0 +1,149 @@
+<div class="container-fluid">
+    <div class="d-flex  justify-content-end align-items-center">
+        <form class="d-flex  justify-content-end">
+            <input class="form-control me-2" #input type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="button" (click)="onSearch(input.value)">Search</button>
+        </form>
+        <div class="m-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                (click)="onAddModalOpen()">Add Product</button>
+        </div>
+    </div>
+    <div>
+        <ngx-datatable class="material striped" [rows]="rows" [columnMode]="'force'" [headerHeight]="50"
+            [footerHeight]="50"  rowHeight="auto" >
+            <ngx-datatable-column name="Id" prop="id">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{row.id}}
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Name" prop="name">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{row.name}}
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Description" prop="description">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{row.description}}
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Price" prop="price">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{row.price}}
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Action" [sortable]="false">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <span class="pe-3" (click)="onProductEdit(row)" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path
+                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path fill-rule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+
+                        </svg>
+                    </span>
+                    <span (click)="onProductDelete(row)" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-trash" viewBox="0 0 16 16">
+                            <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                            <path fill-rule="evenodd"
+                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                        </svg>
+                    </span>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-footer>
+                <ng-template ngx-datatable-footer-template>
+                    <datatable-pager *ngIf="!isSearch" [page]="page.pageNumber" [size]="page.size" [hidden]="false"
+                        [count]="page.totalElements" (change)="setPage($event)"
+                        [pagerLeftArrowIcon]="'datatable-icon-left'" [pagerRightArrowIcon]="'datatable-icon-right'"
+                        [pagerPreviousIcon]="'datatable-icon-prev'" [pagerNextIcon]="'datatable-icon-skip'">
+                    </datatable-pager>
+                </ng-template>
+            </ngx-datatable-footer>
+        </ngx-datatable>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 *ngIf="isAddProduct" class="modal-title" id="exampleModalLabel">Add Product</h5>
+                <h5 *ngIf="!isAddProduct" class="modal-title" id="exampleModalLabel">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="productForm">
+                    <div class="mb-3">
+                        <label for="name" class="col-form-label">Name:</label>
+                        <input type="text" formControlName="name" class="form-control" id="name">
+                        <div>
+                            <span class="text-danger"
+                                *ngIf="(productFormControl.name.touched || submitted) && productFormControl.name.errors?.required">
+                                Product Name is required
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="col-form-label">Description:</label>
+                        <textarea class="form-control" formControlName="description" id="description"></textarea>
+                        <div>
+                            <span class="text-danger"
+                                *ngIf="(productFormControl.description.touched || submitted) && productFormControl.description.errors?.required">
+                                Product Description is required
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="price" class="col-form-label">Price:</label>
+                        <input formControlName="price" class="form-control" id="price">
+                        <div>
+                            <span class="text-danger"
+                                *ngIf="(productFormControl.price.touched || submitted) && productFormControl.price.errors?.required">
+                                Product Price is required
+                            </span>
+                            <span class="text-danger"
+                                *ngIf="(productFormControl.price.touched || submitted) &&  productFormControl.price.errors?.pattern">
+                                Product Price should be a positive integer.
+                            </span>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancel" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button *ngIf="isAddProduct" type="submit" class="btn btn-primary" (click)="onAddProduct()">Add</button>
+                <button *ngIf="!isAddProduct" type="submit" class="btn btn-primary"
+                    (click)="updateProductDetails()">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete?
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancel-delete" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" (click)="deleteProductFromList()" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
