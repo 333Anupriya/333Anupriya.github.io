@@ -13,9 +13,11 @@ npm install
 
 ng serve
 
+npm run dev
+
 open your browser on http://localhost:4200/
 
-npm run dev
+
 
 
 
