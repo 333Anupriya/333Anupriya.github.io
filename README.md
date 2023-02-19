@@ -13,7 +13,9 @@ Running the application
 npm install
 
 Steps: To install and run the json-server
+
 npm install -g json-server
+
 npm run server
 
 ng serve
